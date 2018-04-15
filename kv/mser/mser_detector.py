@@ -36,6 +36,7 @@ class MSERDetector:
                 regions.append(current_region)
 
             for pt_x, pt_y in points:
-                current_region.add_point(Point(pt_x, pt_y))
+                point = Point(pt_x, pt_y)
+                current_region.add_point(point)
 
         return regions

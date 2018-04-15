@@ -1,41 +1,51 @@
 import cv2
 import math
 import numpy as np
+
 from kv.image.image_mode import ImageMode
-from kv import Size
+from kv import Size, Point, Rectangle
+from kv.colors import RGB
 
 
 class Image:
-    def __init__(self, data, mode=ImageMode.BGR):
+    def __init__(self, data: np.ndarray, mode=ImageMode.BGR):
         self._data = data
         self._mode = mode
 
     @property
-    def data(self):
+    def data(self) -> np.ndarray:
         return self._data
 
     @property
-    def mode(self):
+    def mode(self) -> ImageMode:
         return self._mode
 
     @property
-    def width(self):
+    def width(self) -> int:
         return self.data.shape[1]
 
     @property
-    def height(self):
+    def height(self) -> int:
         return self.data.shape[0]
 
     @property
-    def size(self):
+    def size(self) -> Size:
         return Size(self.width, self.height)
 
     @property
-    def aspect_ratio(self):
+    def aspect_ratio(self) -> float:
         return self.width / self.height
 
+    def add_rectangle(self, rectangle: Rectangle, color: RGB, thickness=2):
+        top_left = rectangle.origin.as_tuple()
+        bottom_right = rectangle.end.as_tuple()
+        cv2.rectangle(self.data, top_left, bottom_right, color.as_tuple(), thickness)
+
+    def value_at_point(self, point: Point):
+        return self.data[point.y, point.x]
+
     @classmethod
-    def copy(cls, img, target_mode=None):
+    def copy(cls, img, target_mode: ImageMode=None):
         dst_mode = target_mode if target_mode else img.mode
 
         if img.mode == ImageMode.GRAY:
@@ -62,6 +72,7 @@ class Image:
             raise ValueError("Cannot convert from {} to {}".format(img.mode, dst_mode))
 
         img_data_copy = cv2.cvtColor(img_data_copy, converter)
+
         return cls(img_data_copy, mode=dst_mode)
 
     @classmethod

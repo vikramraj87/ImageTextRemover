@@ -13,6 +13,12 @@ class Size:
     def __str__(self):
         return "({}, {})".format(self.width, self.height)
 
+    def __eq__(self, other):
+        return (self.width, self.height) == (other.width, other.height)
+
+    def __ne__(self, other):
+        return not self == other
+
     def as_tuple(self):
         return self.width, self.height
 
